@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Kart Visual Representation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, #87ceeb, #f0e68c);
+        }
+        #road {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 23%;
+            background: #333;
+            border-top: 5px solid white;
+            border-bottom: 5px solid white;
+        }
+        #kart {
+            position: absolute;
+            bottom: 40%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            width: 120px;
+            height: 100px;
+            background: #007bff;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #kart::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            background: #0056b3;
+            top: 0;
+            left: 0;
+        }
+
+        #kart .kart-handle {
+            width: 80%;
+            height: 5px;
+            background: white;
+            position: absolute;
+            top: -10px;
+            border-radius: 5px;
+        }
+
+        #kart .kart-body {
+            background: white;
+            width: 90%;
+            height: 60%;
+            margin-top: 10px;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+        }
+
+        #kart .kart-wheels {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            position: absolute;
+            bottom: -15px;
+        }
+
+        #kart .kart-wheels div {
+            width: 20px;
+            height: 20px;
+            background: black;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .shop {
+            position: absolute;
+            width: 120px;
+            height: 100px;
+            background: #ff6347;
+            border: 2px solid #333;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .shop ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: none;
+            background: white;
+            border: 1px solid #333;
+            color: black;
+            text-align: left;
+            position: absolute;
+            top: 110%;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .shop.active ul {
+            display: block;
+        }
+        .shop ul li {
+            padding: 5px;
+            cursor: pointer;
+        }
+        #logContainer {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 23%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 0;
+            box-sizing: border-box;
+        }
+        #logContainer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #logContainer ul li {
+            margin-bottom: 5px;
+        }
+        #buyButton {
+            position: absolute;
+            bottom: 20%;
+            right: 10%;
+            padding: 15px 30px;
+            background: #28a745;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .xray {
+            position: absolute;
+            width: 120px;
+            height: 100px;
+            background: rgba(255, 0, 0, 0.5);
+            border: 2px solid red;
+            display: none;
+            pointer-events: none;
+            animation: scanEffect 1s linear infinite;
+        }
+
+        @keyframes scanEffect {
+            0% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="road"></div>
+        <div id="kart">
+            <div class="kart-handle"></div>
+            <div class="kart-body" id="kartTotal">$0</div>
+            <div class="kart-wheels">
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <div id="logContainer">
+            <ul id="logList"></ul>
+        </div>
+        <button id="buyButton" onclick="completePurchase()">Buy</button>
+        <div class="shop" onclick="toggleShop(this)" style="top: 10%; left: 10%;">
+            Shop 1
+            <ul>
+                <li onclick="purchaseItem(event, 'Shop 1', 'Apple', 2)">Apple - $2</li>
+                <li onclick="purchaseItem(event, 'Shop 1', 'Mango', 3)">Mango - $3</li>
+            </ul>
+            <div class="xray"></div>
+        </div>
+        <div class="shop" onclick="toggleShop(this)" style="top: 10%; right: 10%;">
+            Shop 2
+            <ul>
+                <li onclick="purchaseItem(event, 'Shop 2', 'Banana', 1)">Banana - $1</li>
+                <li onclick="purchaseItem(event, 'Shop 2', 'Pineapple', 5)">Pineapple - $5</li>
+            </ul>
+            <div class="xray"></div>
+        </div>
+        <div class="shop" onclick="toggleShop(this)" style="bottom: 30%; left: 10%;">
+            Shop 3
+            <ul>
+                <li onclick="purchaseItem(event, 'Shop 3', 'Orange', 3)">Orange - $3</li>
+                <li onclick="purchaseItem(event, 'Shop 3', 'Peach', 4)">Peach - $4</li>
+            </ul>
+            <div class="xray"></div>
+        </div>
+        <div class="shop" onclick="toggleShop(this)" style="bottom: 30%; right: 10%;">
+            Shop 4
+            <ul>
+                <li onclick="purchaseItem(event, 'Shop 4', 'Grapes', 4)">Grapes - $4</li>
+                <li onclick="purchaseItem(event, 'Shop 4', 'Berry', 2)">Berry - $2</li>
+            </ul>
+            <div class="xray"></div>
+        </div>
+    </div>
+
+    <script>
+        const kart = document.getElementById('kart');
+        const kartTotal = document.getElementById('kartTotal');
+        const logList = document.getElementById('logList');
+        let totalCost = 0;
+
+        function toggleShop(shopElement) {
+            const allShops = document.querySelectorAll('.shop');
+            allShops.forEach(shop => {
+                if (shop !== shopElement) shop.classList.remove('active');
+            });
+            shopElement.classList.toggle('active');
+        }
+
+        function purchaseItem(event, shopName, itemName, price) {
+            event.stopPropagation();
+            const shopElement = event.target.closest('.shop');
+            const shopRect = shopElement.getBoundingClientRect();
+            moveKartToShop(shopRect, () => {
+                activateXray(shopElement, () => {
+                    logMessage("Your Item's RFID is being Scanned");
+                    setTimeout(() => {
+                        totalCost += price;
+                        kartTotal.innerText = `$${totalCost}`;
+                        logPurchase(shopName, itemName, price);
+                        returnToDefaultPosition();
+                    }, 1000);
+                });
+            });
+        }
+
+        function activateXray(shopElement, callback) {
+            const xray = shopElement.querySelector('.xray');
+            xray.style.display = 'block';
+            setTimeout(() => {
+                xray.style.display = 'none';
+                callback();
+            }, 1000);
+        }
+
+        function logMessage(message) {
+            const logEntry = document.createElement('li');
+            logEntry.textContent = message;
+            logList.appendChild(logEntry);
+        }
+
+        function logPurchase(shopName, itemName, price) {
+            const logEntry = document.createElement('li');
+            logEntry.textContent = `Added ${itemName} ($${price}) from ${shopName} to the Kart`;
+            logList.appendChild(logEntry);
+        }
+
+        function moveKartToShop(shopRect, callback) {
+            const kartRect = kart.getBoundingClientRect();
+
+            const targetX = shopRect.left + shopRect.width / 2;
+            const targetY = shopRect.top + shopRect.height / 2;
+
+            kart.style.transition = "all 1000ms linear";
+            kart.style.left = `${targetX}px`;
+            kart.style.top = `${targetY}px`;
+
+            setTimeout(callback, 1000);
+        }
+
+        function returnToDefaultPosition() {
+            const defaultLeft = window.innerWidth / 2 - 50;
+            const defaultTop = window.innerHeight * 0.65;
+
+            kart.style.transition = "all 1000ms linear";
+            kart.style.left = `${defaultLeft}px`;
+            kart.style.top = `${defaultTop}px`;
+        }
+
+        function completePurchase() {
+            alert("Thanks for shopping!");
+            logList.innerHTML = "";
+            totalCost = 0;
+            kartTotal.innerText = "$0";
+        }
+    </script>
+</body>
+</html>
